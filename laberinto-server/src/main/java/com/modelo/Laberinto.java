@@ -48,7 +48,17 @@ public class Laberinto {
 			}
 			System.out.println();
 		}
-
+	}
+	
+	public String dibujarString(){
+		String salida = "";
+		for (int i = 0 ; i<10 ; i++) {
+			for (int j = 0 ; j<10 ; j++) {
+				salida=salida+celdas[j][i];
+			}
+			salida=salida+"\n";
+		}
+		return salida;
 	}
 	
 }

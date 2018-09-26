@@ -2,54 +2,82 @@ package com.negocio;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 
-public class Cliente {
+public class Server extends Thread{
 	private static String host = "127.0.0.1";
 	private static int port = 8081;
-	private Socket echoSocket;
-	private SocketAddress remoteaddr;
+	protected Socket echoSocket;
+	private ServerSocket echoServer;
+	private SocketAddress localaddr;
 	private PrintWriter out;
 	private BufferedReader in;
+	
+	private static Server singleton = new Server();
 
-	private static Cliente singleton = new Cliente(host, port);
-
-	public Cliente(String host, int port) {
-		this.echoSocket = new Socket();
-		this.remoteaddr = new InetSocketAddress(host, port);
+	public Server() {
+		try {
+			this.echoServer=new ServerSocket();
+			this.localaddr = new InetSocketAddress(host, port);
+			this.echoServer.bind(localaddr);
+		} catch (IOException e) {
+			System.out.println("error en la capa de negocio");
+		}
 
 	}
-
-	public static Cliente getInstance() {
+	
+	public static Server getInstance() {
 		return singleton;
 	}
-
 	
-	public void clear() {
-		singleton = new Cliente(host, port);
+	public Server(Socket socket) throws IOException {
+		this.echoSocket = socket;
+        System.out.println("Nuevo cliente conectado desde: " + socket.getInetAddress().getHostAddress());
+        start();		
+	}
+	
+	public void run() {
+        try {
+    		in = new BufferedReader(new InputStreamReader(this.echoSocket.getInputStream()));
+    		out = new PrintWriter(this.echoSocket.getOutputStream(), true);
+            String request;
+            while ((request = in.readLine()) != null) {
+                System.out.println("Mensaje recibido:" + request);
+                //request += '\n';
+                out.println(request);
+            }
+
+        } catch (IOException ex) {
+            System.out.println("No se pueden opterner transmisiones del cliente: "+echoSocket.getInetAddress().getHostAddress());
+        } finally {
+            try {
+                in.close();
+                desconectar();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+		
 	}
 
-	public void conectar() {
-		try {
-			this.echoSocket.connect(this.remoteaddr);
-			enviarDato(ipCliente() + " se ha conectado.");
-		} catch (IOException e) {
-			System.err.println("no se pudo conectar con el servidor");
-		//	System.exit(1);
-		}
-		System.out.println("conectado");
-
+	public void clear() throws IOException {
+		this.echoSocket.close();
 	}
 
-	public boolean estaConectado() {
-		return this.echoSocket.isConnected();
+	public Socket conectar() throws IOException {
+		return this.echoServer.accept();
 	}
+
+
 
 	public void desconectar() throws IOException {
 		System.out.println("desconectado");
@@ -71,6 +99,16 @@ public class Cliente {
 		response = this.in.readLine();
 		// System.out.print("response: " + response);
 		return response;
+	}
+
+	
+	
+	public Socket getEchoSocket() {
+		return echoSocket;
+	}
+
+	public ServerSocket getEchoServer() {
+		return echoServer;
 	}
 
 	public String ipCliente() throws SocketException {
