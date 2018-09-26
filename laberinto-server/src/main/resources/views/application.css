@@ -1,0 +1,75 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+
+
+.root {
+     -fx-background-image: url("background.jpg");
+     -fx-background-color: #fff;
+}
+
+.juego {
+     -fx-background-image: url("background.jpg");
+     -fx-background-color: #fff;
+}
+
+.personaje {
+     -fx-background-image: url("personaje.png");
+     -fx-background-color: #fff;
+}
+
+
+.label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill:  #A8EB12;
+	-fx-stroke-width: 5;
+	-fx-stroke: green;
+    -fx-effect: dropshadow( gaussian , rgba(168,235,18,0.7) , 0,0,0,1 );
+}
+
+#welcome-text {
+   -fx-font-size: 32px;
+   -fx-font-family: Helvetica, Arial, sans-serif;
+   -fx-fill: #A8EB12;
+   -fx-stroke-width: 2;
+   -fx-stroke: green;
+   -fx-effect: innershadow( three-pass-box , rgba(168,235,18,0.7) , 6, 0.0 , 0 , 2 );
+}
+
+#login-text {
+   -fx-font-size: 16px;
+   -fx-font-family: Helvetica, Arial, sans-serif;
+   -fx-stroke-width: 2;
+   -fx-stroke: green;
+   -fx-fill: #A8EB12;
+   -fx-effect: innershadow( three-pass-box , rgba(168,235,18,0.7) , 6, 0.0 , 0 , 2 );
+}
+
+#actiontarget {
+  -fx-fill: FIREBRICK;
+  -fx-font-weight: bold;
+  -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );  
+}
+
+.button {
+    -fx-text-fill: white;
+    -fx-font-family: Helvetica, Arial, sans-serif;
+    -fx-font-weight: bold;
+    -fx-background-color: linear-gradient(#fcda59,#fcda59);
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(#fcda59, #685723);
+}
+
+.label {
+  -fx-font-weight: 400; 
+  -fx-font-family: Helvetica, Arial, sans-serif;
+  -fx-stroke-width: 2;
+  -fx-stroke: green;
+}
+
+#footer{
+	-fx-background-color: linear-gradient(#fcda59, #685723);
+}
+
