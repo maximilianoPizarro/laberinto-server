@@ -18,8 +18,10 @@ public class TestServer {
         }
     */
         Server cliente= new Server(server.conectar());
+        while(true){
         cliente.enviarDato("en sesion");
         System.out.println(cliente.recibirDato());
+        }
         //server.enviarDato("en sesion-");
        // new Server(server.conectar());
 	}

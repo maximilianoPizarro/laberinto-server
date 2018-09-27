@@ -110,11 +110,11 @@ public class AppController extends Thread implements Initializable {
 
 	@FXML
 	private AnchorPane container;
-	
+
 	@FXML
 	private TextArea laberinto;
 
-	private ArrayList<String> buffer= new ArrayList<String>();
+	private ArrayList<String> buffer = new ArrayList<String>();
 
 	@FXML
 	protected void handleSubmitButtonAction(ActionEvent event) {
@@ -123,30 +123,32 @@ public class AppController extends Thread implements Initializable {
 
 	@Override
 	public void initialize(URL url, ResourceBundle rb) { // TODO }
-		Laberinto l=new Laberinto();
+		Laberinto l = new Laberinto();
 		try {
 			l.rellenarLaberinto();
 			laberinto.setText(l.dibujarString());
 		} catch (URISyntaxException e) {
 			System.out.println("error al cargar el archivo");
 		}
-		list.setItems(FXCollections.observableArrayList(buffer));
+		//list.setItems(FXCollections.observableArrayList(buffer));
 		start();
-		
+
 	}
 
-	
+	@Override
 	public void run() {
-		errorLogin.setText("");
+		//errorLogin.setText("");
 		Server server = Server.getInstance();
-		
+
 		try {
-			while(true){
-			Server cliente= new Server(server.conectar());
-			buffer.add(cliente.recibirDato());
-			cliente.enviarDato("recibido");
-			list.setItems(FXCollections.observableArrayList(buffer));
+
+			Server cliente = new Server(server.conectar());
+			while (true) {
+				buffer.add(cliente.recibirDato());
+				cliente.enviarDato("recibido");
+				list.setItems(FXCollections.observableArrayList(buffer));
 			}
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

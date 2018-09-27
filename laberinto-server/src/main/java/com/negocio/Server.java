@@ -41,8 +41,10 @@ public class Server extends Thread{
 	
 	public Server(Socket socket) throws IOException {
 		this.echoSocket = socket;
+		this.out=new PrintWriter(this.echoSocket.getOutputStream(), true);
+		this.in = new BufferedReader(new InputStreamReader(this.echoSocket.getInputStream()));
         System.out.println("Nuevo cliente conectado desde: " + socket.getInetAddress().getHostAddress());
-        start();		
+       // start();		
 	}
 	
 	public void run() {
@@ -88,14 +90,12 @@ public class Server extends Thread{
 
 	public void enviarDato(String request) throws IOException {
 		// this.out.flush();
-		this.out = new PrintWriter(this.echoSocket.getOutputStream(), true);
 		this.out.println(request);
 		// System.out.print("request: " + request);
 	}
 
 	public String recibirDato() throws IOException {
-		String response;
-		this.in = new BufferedReader(new InputStreamReader(this.echoSocket.getInputStream()));
+		String response;		
 		response = this.in.readLine();
 		// System.out.print("response: " + response);
 		return response;
