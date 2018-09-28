@@ -150,10 +150,12 @@ public class AppController extends Thread implements Initializable {
 
 		try {		
 			while (server.getEchoServer().isBound()) {
-				 Cliente nuevoCliente = new Cliente(server.conectar(),server.cantidadDeClientes, server.getOut(), server.getIn()); 
-		         //Thread t = new Thread(mtch); 
+				 Cliente nuevoCliente = new Cliente(server.conectar(),server.cantidadDeClientes); 
+		         Thread proceso = new Thread(nuevoCliente); 
 		         Server.clientes.add(nuevoCliente); //lista de clientes del servidor
 		         server.cantidadDeClientes++; 	
+		         System.out.println("clientes: "+server.cantidadDeClientes);
+		         proceso.start();
 		 		Platform.runLater(new Runnable(){
 				     @Override
 		            public void run() {

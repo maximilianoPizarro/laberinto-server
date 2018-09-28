@@ -27,11 +27,12 @@ public class Cliente implements Runnable{
 
 	}
 	
-	public Cliente(Socket socket,int identificador, PrintWriter out, BufferedReader in) {
+	public Cliente(Socket socket,int identificador) throws IOException {
 		this.echoSocket = socket;
 		this.identificador=identificador;
-		this.out=out;
-		this.in=in;
+		this.out=new PrintWriter(this.echoSocket.getOutputStream(), true);
+		this.in = new BufferedReader(new InputStreamReader(this.echoSocket.getInputStream()));
+
 
 	}
 
@@ -47,7 +48,7 @@ public class Cliente implements Runnable{
 	public void conectar() {
 		try {
 			this.echoSocket.connect(this.remoteaddr);
-			enviarDato( " se ha conectado.");
+			enviarDato( "se ha conectado.");
 		} catch (IOException e) {
 			System.err.println("no se pudo conectar con el servidor");
 		//	System.exit(1);
@@ -76,8 +77,9 @@ public class Cliente implements Runnable{
 
 	public String recibirDato() throws IOException {
 		String response;
-		this.in = new BufferedReader(new InputStreamReader(this.echoSocket.getInputStream()));
+	 	this.in = new BufferedReader(new InputStreamReader(this.echoSocket.getInputStream()));
 		response = this.in.readLine();
+		
 		// System.out.print("response: " + response);
 		return response;
 	}
@@ -103,7 +105,14 @@ public class Cliente implements Runnable{
 	}
 	
 	public void run(){
-		//entrada y salidas del cliente
+		try {
+			//if (echoSocket.isConnected())
+			while(recibirDato()!=null)		
+				System.out.println(recibirDato());
+				//enviarDato("response");
+		} catch (IOException e) {
+			System.out.println("Error en la capa de negocio");
+		}
 	}
 
 	public static ArrayList<String> adpatadorEthernet() {
