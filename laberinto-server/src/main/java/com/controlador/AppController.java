@@ -33,6 +33,8 @@
 package com.controlador;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -40,20 +42,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.Socket;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.concurrent.Semaphore;
 
 import javax.swing.JOptionPane;
 
 import com.modelo.Laberinto;
 import com.modelo.User;
 import com.negocio.Server;
+import com.negocio.Cliente;
 import com.negocio.Facade;
 import com.negocio.UserABM;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -133,6 +139,8 @@ public class AppController extends Thread implements Initializable {
 		//list.setItems(FXCollections.observableArrayList(buffer));
 		start();
 
+
+
 	}
 
 	@Override
@@ -140,13 +148,20 @@ public class AppController extends Thread implements Initializable {
 		//errorLogin.setText("");
 		Server server = Server.getInstance();
 
-		try {
-
-			Server cliente = new Server(server.conectar());
-			while (true) {
-				buffer.add(cliente.recibirDato());
-				cliente.enviarDato("recibido");
-				list.setItems(FXCollections.observableArrayList(buffer));
+		try {		
+			while (server.getEchoServer().isBound()) {
+				 Cliente nuevoCliente = new Cliente(server.conectar(),server.cantidadDeClientes, server.getOut(), server.getIn()); 
+		         //Thread t = new Thread(mtch); 
+		         Server.clientes.add(nuevoCliente); //lista de clientes del servidor
+		         server.cantidadDeClientes++; 	
+		 		Platform.runLater(new Runnable(){
+				     @Override
+		            public void run() {
+							list.setItems(FXCollections.observableArrayList(server.getClientesString()));
+		            }
+				}
+				);
+				
 			}
 
 		} catch (IOException e) {
@@ -173,4 +188,32 @@ public class AppController extends Thread implements Initializable {
 		copyright.setAlignment(Pos.CENTER);
 	}
 
+}
+
+class Actualizar implements Runnable{
+	
+	 private static final Semaphore DISPONIBILIDAD = new Semaphore(1);
+	
+	 private final ListView<String> list;
+	 private final ArrayList<String> buffer;
+	
+	public Actualizar(ListView<String> list,ArrayList<String> buffer){
+		this.list=list;
+		this.buffer=buffer;		
+		
+	}
+	
+	@Override
+	public void run(){
+		try {
+			DISPONIBILIDAD.acquire();
+			list.setItems(FXCollections.observableArrayList(buffer));
+			DISPONIBILIDAD.release();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		
+	}
+	
 }
