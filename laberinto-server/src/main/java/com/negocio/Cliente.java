@@ -10,6 +10,9 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 
+import com.google.gson.Gson;
+import com.modelo.Punto;
+
 public class Cliente implements Runnable{
 	private int identificador;
 	private static String host = "127.0.0.1";
@@ -107,8 +110,11 @@ public class Cliente implements Runnable{
 	public void run(){
 		try {
 			//if (echoSocket.isConnected())
+
 			while(recibirDato()!=null)		
-				System.out.println(recibirDato());
+				/* Punto punto=new Gson().fromJson(recibirDato(),Punto.class);   //json a clase
+				   System.out.println(punto.toString()); */
+				System.out.println(recibirDato());			//solo json
 				//enviarDato("response");
 		} catch (IOException e) {
 			System.out.println("Error en la capa de negocio");
