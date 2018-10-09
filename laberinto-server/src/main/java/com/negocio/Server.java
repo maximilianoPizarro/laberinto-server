@@ -12,8 +12,10 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Vector;
 
-public class Server extends Thread{
+
+public class Server {
 	private static String host = "127.0.0.1";
 	private static int port = 8081;
 	protected Socket echoSocket;
@@ -21,6 +23,8 @@ public class Server extends Thread{
 	private SocketAddress localaddr;
 	private PrintWriter out;
 	private BufferedReader in;
+	public static ArrayList<Cliente> clientes = new ArrayList<Cliente>(); 
+	public int cantidadDeClientes;
 	
 	private static Server singleton = new Server();
 
@@ -41,8 +45,10 @@ public class Server extends Thread{
 	
 	public Server(Socket socket) throws IOException {
 		this.echoSocket = socket;
+		this.out=new PrintWriter(this.echoSocket.getOutputStream(), true);
+		this.in = new BufferedReader(new InputStreamReader(this.echoSocket.getInputStream()));
         System.out.println("Nuevo cliente conectado desde: " + socket.getInetAddress().getHostAddress());
-        start();		
+       // start();		
 	}
 	
 	public void run() {
@@ -80,23 +86,25 @@ public class Server extends Thread{
 
 
 	public void desconectar() throws IOException {
-		System.out.println("desconectado");
-		this.out.println(ipCliente() + " se ha desconectado.");
+		//System.out.println("desconectado");
+		this.out.println(echoSocket.getInetAddress().getHostAddress() + " se ha desconectado.");
 		this.echoSocket.close();
 		this.out.close();
+		
 	}
 
-	public void enviarDato(String request) throws IOException {
+	public void enviarDato(String request) {
 		// this.out.flush();
-		this.out = new PrintWriter(this.echoSocket.getOutputStream(), true);
 		this.out.println(request);
 		// System.out.print("request: " + request);
 	}
 
-	public String recibirDato() throws IOException {
-		String response;
-		this.in = new BufferedReader(new InputStreamReader(this.echoSocket.getInputStream()));
-		response = this.in.readLine();
+	public String recibirDato() throws IOException  {
+		String response="";		
+		try {
+			response = this.in.readLine();
+		} catch (IOException e) {
+		}
 		// System.out.print("response: " + response);
 		return response;
 	}
@@ -110,6 +118,33 @@ public class Server extends Thread{
 	public ServerSocket getEchoServer() {
 		return echoServer;
 	}
+	
+
+	public PrintWriter getOut() {
+		return out;
+	}
+
+	public BufferedReader getIn() {
+		return in;
+	}
+	
+	
+
+	public static ArrayList<Cliente> getClientes() {
+		return clientes;
+	}
+	
+	public static ArrayList<String> getClientesString() {
+		ArrayList<String>retorno=new ArrayList<String>();
+		
+		for(Cliente elemento:clientes){
+			retorno.add(elemento.getEchoSocket().getInetAddress().getHostAddress());
+		}
+		
+		return retorno;
+	}
+	
+	
 
 	public String ipCliente() throws SocketException {
 		String ip = "S/D";
