@@ -61,4 +61,8 @@ public class Laberinto {
 		return salida;
 	}
 	
+	public void guardarLaberinto() {
+		
+	}
+	
 }

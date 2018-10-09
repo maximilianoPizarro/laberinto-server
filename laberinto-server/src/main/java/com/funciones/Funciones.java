@@ -2,14 +2,17 @@ package com.funciones;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.StringReader;
+import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -84,7 +87,7 @@ public class Funciones {
 		return mesEnLetra[traerNroMes(fecha)];
 	}
 
-	// AÑO
+	// Aï¿½O
 	public static String traerAnio(GregorianCalendar fecha) {
 		return String.valueOf(traerNroAnio(fecha));
 	}
@@ -171,7 +174,7 @@ public class Funciones {
 	}
 
 	// Menores
-	/* Para años con diferencias menores que 1, ej:2015 y 2014, retorna true */
+	/* Para aï¿½os con diferencias menores que 1, ej:2015 y 2014, retorna true */
 	public static boolean diferenciaAnioDeUno(GregorianCalendar f,
 			GregorianCalendar fecha) {
 		return (traerNroAnio(f) - traerNroAnio(fecha) == 1);
@@ -313,7 +316,7 @@ public class Funciones {
 
 	public static boolean comprobarCaracter(String cadena) {
 		// Para comprobar que todos los caracteres de las cadenas sean numeros o
-		// letras válidas
+		// letras vï¿½lidas
 		int i = 0;
 		boolean respuesta = true;
 		while (i < cadena.length()) {
@@ -452,4 +455,23 @@ public class Funciones {
 	 * 
 	 * }
 	 */
+	public boolean validarLogin(String usuario, String password) throws URISyntaxException, FileNotFoundException {
+		boolean result = false;
+		
+		File f = new File(getClass().getResource("/views/users.config").toURI().toString().substring(6));
+        Scanner sc =  new Scanner(f);
+        String usuarioLeido = sc.next();
+        while (usuario.compareTo(usuarioLeido) != 0 && sc.hasNext()){
+        	sc.next(); //DESECHO PASSWORD QUE NO ES DEL USUARIO
+        	if (sc.hasNext()) usuarioLeido = sc.next();
+        }
+        if (usuario.compareTo(usuarioLeido) == 0) {
+        	String passwordLeido = sc.next();
+        	if (password.compareTo(passwordLeido) == 0) {
+        		result = true;
+        	}
+        }
+		return result;		
+	}
+
 }

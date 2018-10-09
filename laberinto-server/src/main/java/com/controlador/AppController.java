@@ -45,6 +45,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 
@@ -143,7 +144,8 @@ public class AppController extends Thread implements Initializable {
 		try {
 			while(true){
 			Server cliente= new Server(server.conectar());
-			buffer.add(cliente.recibirDato());
+			buffer.add(cliente.recibirDato());	
+			
 			cliente.enviarDato("recibido");
 			list.setItems(FXCollections.observableArrayList(buffer));
 			}
@@ -160,7 +162,7 @@ public class AppController extends Thread implements Initializable {
 		System.exit(1);
 
 	}
-
+	
 	@FXML
 	protected void acercaDe(ActionEvent event) {
 		copyright.setVisible(true);
