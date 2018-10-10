@@ -8,10 +8,13 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
+import com.funciones.Funciones;
 import com.google.gson.Gson;
 import com.modelo.Punto;
+import com.modelo.User;
 
 public class Cliente implements Runnable{
 	private int identificador;
@@ -21,6 +24,8 @@ public class Cliente implements Runnable{
 	private SocketAddress remoteaddr;
 	private PrintWriter out;
 	private BufferedReader in;
+	private User usuario;
+	
 
 	private static Cliente singleton = new Cliente(host, port);
 
@@ -51,7 +56,7 @@ public class Cliente implements Runnable{
 	public void conectar() {
 		try {
 			this.echoSocket.connect(this.remoteaddr);
-			enviarDato( "se ha conectado.");
+			enviarDato("se ha conectado.");
 		} catch (IOException e) {
 			System.err.println("no se pudo conectar con el servidor");
 		//	System.exit(1);
@@ -66,7 +71,7 @@ public class Cliente implements Runnable{
 
 	public void desconectar() throws IOException {
 		//System.out.println("desconectado");
-		this.out.println(" se ha desconectado.");
+		this.out.println("se ha desconectado.");
 		this.echoSocket.close();
 		this.out.close();
 	}
@@ -97,7 +102,15 @@ public class Cliente implements Runnable{
 	public Socket getEchoSocket() {
 		return echoSocket;
 	}
+	
 
+	public User getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(User usuario) {
+		this.usuario = usuario;
+	}
 
 	public String ipCliente() throws SocketException {
 		String ip = "S/D";
@@ -108,17 +121,36 @@ public class Cliente implements Runnable{
 	}
 	
 	public void run(){
+		boolean autenticado=true;
+		Funciones aC = new Funciones();
 		try {
 			//if (echoSocket.isConnected())
+			//System.out.println(recibirDato());			
+			this.usuario=new Gson().fromJson(recibirDato(),User.class);
+			System.out.println(usuario.toString());
+			try {
+				if ( aC.validarLogin(usuario.getSsoId(), usuario.getPassword())) {
+					enviarDato("autenticado");
+				}
+				else{
+					enviarDato("usuario no encontrado");
+					autenticado=false;
+				}
+			} catch (URISyntaxException e) {
+				System.out.println("error en la capa de negocio: cliente");
+			}
 
-			while(recibirDato()!=null)		
+			while(recibirDato()!=null && autenticado)		
 				/* Punto punto=new Gson().fromJson(recibirDato(),Punto.class);   //json a clase
 				   System.out.println(punto.toString()); */
 				System.out.println(recibirDato());			//solo json
+				desconectar();
 				//enviarDato("response");
 		} catch (IOException e) {
 			System.out.println("Error en la capa de negocio");
 		}
+		
+		
 	}
 
 	public static ArrayList<String> adpatadorEthernet() {

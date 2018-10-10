@@ -144,6 +144,25 @@ public class Server {
 		return retorno;
 	}
 	
+	public boolean agregarCliente(Cliente c) throws IOException{
+		boolean respuesta=true;
+		
+		int i = 0;
+		while (i < clientes.size() && respuesta) {
+			if(clientes.get(i).getUsuario().equals(c.getUsuario())){
+				respuesta=false;
+				clientes.remove(clientes.get(i));
+				}
+		}
+		if(respuesta)
+			clientes.add(c);
+		return respuesta;
+	}
+	
+	public Cliente traerUltimoCliente(){
+		return clientes.get(clientes.size()-1);
+	}
+	
 	
 
 	public String ipCliente() throws SocketException {

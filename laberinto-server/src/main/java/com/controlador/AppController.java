@@ -33,6 +33,8 @@
 package com.controlador;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -40,21 +42,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.Socket;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.Scanner;
+import java.util.concurrent.Semaphore;
 
 import javax.swing.JOptionPane;
 
 import com.modelo.Laberinto;
 import com.modelo.User;
 import com.negocio.Server;
+import com.negocio.Cliente;
 import com.negocio.Facade;
 import com.negocio.UserABM;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -111,11 +116,11 @@ public class AppController extends Thread implements Initializable {
 
 	@FXML
 	private AnchorPane container;
-	
+
 	@FXML
 	private TextArea laberinto;
 
-	private ArrayList<String> buffer= new ArrayList<String>();
+	private ArrayList<String> buffer = new ArrayList<String>();
 
 	@FXML
 	protected void handleSubmitButtonAction(ActionEvent event) {
@@ -124,31 +129,43 @@ public class AppController extends Thread implements Initializable {
 
 	@Override
 	public void initialize(URL url, ResourceBundle rb) { // TODO }
-		Laberinto l=new Laberinto();
+		Laberinto l = new Laberinto();
 		try {
 			l.rellenarLaberinto();
 			laberinto.setText(l.dibujarString());
 		} catch (URISyntaxException e) {
 			System.out.println("error al cargar el archivo");
 		}
-		list.setItems(FXCollections.observableArrayList(buffer));
+		//list.setItems(FXCollections.observableArrayList(buffer));
 		start();
-		
+
+
+
 	}
 
-	
+	@Override
 	public void run() {
-		errorLogin.setText("");
-		Server server = Server.getInstance();
-		
-		try {
-			while(true){
-			Server cliente= new Server(server.conectar());
-			buffer.add(cliente.recibirDato());	
-			
-			cliente.enviarDato("recibido");
-			list.setItems(FXCollections.observableArrayList(buffer));
+		//errorLogin.setText("");
+		Server server = Server.getInstance();	
+
+		try {		
+			while (server.getEchoServer().isBound()) {       
+		         if(server.agregarCliente(new Cliente(server.conectar(),server.cantidadDeClientes))){
+			         server.cantidadDeClientes++; 	
+			         System.out.println("clientes: "+server.cantidadDeClientes);
+		        	 Thread proceso = new Thread(server.traerUltimoCliente()); 		         
+		         	 proceso.start();
+		         }
+		 		Platform.runLater(new Runnable(){
+				     @Override
+		            public void run() {
+							list.setItems(FXCollections.observableArrayList(server.getClientesString()));
+		            }
+				}
+				);
+				
 			}
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -162,7 +179,7 @@ public class AppController extends Thread implements Initializable {
 		System.exit(1);
 
 	}
-	
+
 	@FXML
 	protected void acercaDe(ActionEvent event) {
 		copyright.setVisible(true);
@@ -173,4 +190,32 @@ public class AppController extends Thread implements Initializable {
 		copyright.setAlignment(Pos.CENTER);
 	}
 
+}
+
+class Actualizar implements Runnable{
+	
+	 private static final Semaphore DISPONIBILIDAD = new Semaphore(1);
+	
+	 private final ListView<String> list;
+	 private final ArrayList<String> buffer;
+	
+	public Actualizar(ListView<String> list,ArrayList<String> buffer){
+		this.list=list;
+		this.buffer=buffer;		
+		
+	}
+	
+	@Override
+	public void run(){
+		try {
+			DISPONIBILIDAD.acquire();
+			list.setItems(FXCollections.observableArrayList(buffer));
+			DISPONIBILIDAD.release();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		
+	}
+	
 }
