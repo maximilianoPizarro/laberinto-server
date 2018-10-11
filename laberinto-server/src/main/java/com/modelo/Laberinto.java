@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
+import com.google.gson.Gson;
 import com.test.Sprite;
 
 public class Laberinto {
@@ -59,6 +60,10 @@ public class Laberinto {
 			salida=salida+"\n";
 		}
 		return salida;
+	}
+	
+	public String dibujarJson(){
+		return new Gson().toJson(celdas);
 	}
 	
 	public void guardarLaberinto() {

@@ -166,7 +166,7 @@ public class AppController extends Thread implements Initializable {
 				     @Override
 		            public void run() {
 				    	 	try {
-								Thread.sleep(100);
+								Thread.sleep(5000);
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import com.funciones.Funciones;
 import com.google.gson.Gson;
+import com.modelo.Laberinto;
 import com.modelo.Punto;
 import com.modelo.User;
 
@@ -123,14 +124,20 @@ public class Cliente implements Runnable{
 	public void run(){
 		boolean autenticado=true;
 		Funciones aC = new Funciones();
+		Laberinto l = new Laberinto();
 		try {
-			//if (echoSocket.isConnected())
-			//System.out.println(recibirDato());			
+			l.rellenarLaberinto();
+		} catch (URISyntaxException e) {
+			System.out.println("error en la capa de negocio: cliente");
+		}
+		
+		try {			
 			this.usuario=new Gson().fromJson(recibirDato(),User.class);
 			System.out.println(usuario.toString());
 			try {
 				if ( aC.validarLogin(usuario.getSsoId(), usuario.getPassword())) {
 					enviarDato("autenticado");
+					
 				}
 				else{
 					enviarDato("usuario no encontrado");
@@ -139,6 +146,8 @@ public class Cliente implements Runnable{
 			} catch (URISyntaxException e) {
 				System.out.println("error en la capa de negocio: cliente");
 			}
+			
+			enviarDato(l.dibujarJson());
 
 			while(recibirDato()!=null && autenticado)		
 				System.out.println(recibirDato());			//solo json
