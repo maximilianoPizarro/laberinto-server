@@ -70,7 +70,7 @@ public class Cliente implements Runnable{
 	}
 
 	public void desconectar() throws IOException {
-		//System.out.println("desconectado");
+		System.out.println(usuario.usuarioClave()+" desconectado");
 		this.out.println("se ha desconectado.");
 		this.echoSocket.close();
 		this.out.close();
@@ -141,10 +141,8 @@ public class Cliente implements Runnable{
 			}
 
 			while(recibirDato()!=null && autenticado)		
-				/* Punto punto=new Gson().fromJson(recibirDato(),Punto.class);   //json a clase
-				   System.out.println(punto.toString()); */
 				System.out.println(recibirDato());			//solo json
-				desconectar();
+			desconectar();	
 				//enviarDato("response");
 		} catch (IOException e) {
 			System.out.println("Error en la capa de negocio");

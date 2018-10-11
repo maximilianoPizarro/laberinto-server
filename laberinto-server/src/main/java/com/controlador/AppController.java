@@ -121,6 +121,9 @@ public class AppController extends Thread implements Initializable {
 	private TextArea laberinto;
 
 	private ArrayList<String> buffer = new ArrayList<String>();
+	
+	private ArrayList<Thread> hilos = new ArrayList<Thread>();
+	
 
 	@FXML
 	protected void handleSubmitButtonAction(ActionEvent event) {
@@ -153,12 +156,20 @@ public class AppController extends Thread implements Initializable {
 		         if(server.agregarCliente(new Cliente(server.conectar(),server.cantidadDeClientes))){
 			         server.cantidadDeClientes++; 	
 			         System.out.println("clientes: "+server.cantidadDeClientes);
+
 		        	 Thread proceso = new Thread(server.traerUltimoCliente()); 		         
-		         	 proceso.start();
+		         	 proceso.start();		         	 
+		         	 hilos.add(proceso);	  
+		         	 
 		         }
 		 		Platform.runLater(new Runnable(){
 				     @Override
 		            public void run() {
+				    	 	try {
+								Thread.sleep(100);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
 							list.setItems(FXCollections.observableArrayList(server.getClientesString()));
 		            }
 				}
@@ -171,8 +182,16 @@ public class AppController extends Thread implements Initializable {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@FXML
 	protected void salir(ActionEvent event) {
+		int i=1;
+		
+		for(Thread elemento:hilos){
+			System.out.println("Suspendiendo hilo: "+i);
+			elemento.stop();
+			i++;
+		}
 
 		Stage stage = (Stage) root.getScene().getWindow();
 		stage.close();

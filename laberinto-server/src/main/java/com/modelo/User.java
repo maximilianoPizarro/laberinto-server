@@ -125,6 +125,11 @@ public class User {
 				+ ", lastName=" + lastName + ", email=" + email + "]";
 	}
 	
+	public String usuarioClave(){
+		return "usuario: "+ssoId+" clave:"+password;
+	}
+	
+	
 	public boolean esAdmin(){
 		UserProfile aux= new UserProfile();
 		aux.setType("ADMIN");

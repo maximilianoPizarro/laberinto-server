@@ -138,7 +138,9 @@ public class Server {
 		ArrayList<String>retorno=new ArrayList<String>();
 		
 		for(Cliente elemento:clientes){
-			retorno.add(elemento.getEchoSocket().getInetAddress().getHostAddress());
+			//System.out.println(elemento.getEchoSocket().getInetAddress());
+			//retorno.add(elemento.getEchoSocket().getInetAddress().getHostName());
+			retorno.add(elemento.getUsuario().usuarioClave());
 		}
 		
 		return retorno;
@@ -153,6 +155,7 @@ public class Server {
 				respuesta=false;
 				clientes.remove(clientes.get(i));
 				}
+			i++;
 		}
 		if(respuesta)
 			clientes.add(c);
@@ -164,7 +167,6 @@ public class Server {
 	}
 	
 	
-
 	public String ipCliente() throws SocketException {
 		String ip = "S/D";
 		String linea = adpatadorEthernet().get(7);
