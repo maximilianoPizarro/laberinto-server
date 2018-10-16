@@ -89,7 +89,7 @@ public class Cliente implements Runnable{
 	 	this.in = new BufferedReader(new InputStreamReader(this.echoSocket.getInputStream()));
 		response = this.in.readLine();
 		
-		// System.out.print("response: " + response);
+		System.out.print("response: " + response);
 		return response;
 	}
 	
@@ -146,13 +146,29 @@ public class Cliente implements Runnable{
 			} catch (URISyntaxException e) {
 				System.out.println("error en la capa de negocio: cliente");
 			}
-			
 			enviarDato(l.dibujarJson());
+			
+			//recibo el punto inicial
+			System.out.println("recibo punto donde estoy");
+			Punto p1 = new Gson().fromJson(recibirDato(),Punto.class);
+			//this.usuario=new Gson().fromJson(recibirDato(),User.class);
+			//System.out.println("envio matriz cercana" + p1.dibujarJson());
+			System.out.println("envio matriz cercana");
+			//char[][] matrizCercana = l.crearMatrizCercana(p1);  // CREAR MATRIZ Y ENVIAr
+			Laberinto laberintoCercano = l.crearMatrizCercana(p1);  // CREAR MATRIZ Y ENVIAr
+			enviarDato(laberintoCercano.laberintoToJson());
+			
 
-			while(recibirDato()!=null && autenticado)		
-				System.out.println(recibirDato());			//solo json
-			desconectar();	
-				//enviarDato("response");
+			while (autenticado) {
+				System.out.println("recibo punto donde estoy");
+				p1 = new Gson().fromJson(recibirDato(), Punto.class);
+				if (p1.getPositionX() > 2)
+					System.out.println("paso a 1");	
+				System.out.println("envio matriz cercana");
+				laberintoCercano = l.crearMatrizCercana(p1); // CREAR MATRIZ Y ENVIAr
+				enviarDato(laberintoCercano.laberintoToJson());
+				//desconectar();
+			}
 		} catch (IOException e) {
 			System.out.println("Error en la capa de negocio");
 		}

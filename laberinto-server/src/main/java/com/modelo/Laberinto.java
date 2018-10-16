@@ -66,8 +66,38 @@ public class Laberinto {
 		return new Gson().toJson(celdas);
 	}
 	
+	public String laberintoToJson(){
+		return new Gson().toJson(this);
+	}
+	
 	public void guardarLaberinto() {
 		
 	}
-	
+
+	//public char[][] crearMatrizCercana(Punto p1) {
+	public Laberinto crearMatrizCercana(Punto p1) {
+		int distanciaVisible = 2;
+		//char [][] matrizCercana = new char[10][10] ;
+		
+		Laberinto laberintoCercano = new Laberinto();
+		laberintoCercano.celdas = new char[10][10];
+		
+		for (int i = 0; i < 10 ; i++) {
+			for (int j = 0; j < 10 ; j++) {
+	            if ((Math.abs((p1.getPositionX()/50) - j) < distanciaVisible) 
+	            		&& (Math.abs((p1.getPositionY()/50) - i) < distanciaVisible)) {
+	            	//matrizCercana[j][i] = this.celdas[j][i];
+	            	laberintoCercano.getCeldas()[j][i] = this.celdas[j][i];
+	            }
+	            else {
+	            	//matrizCercana[j][i] = 'X';
+	            	laberintoCercano.getCeldas()[j][i] = 'X';
+	            }
+			}
+		}		
+		//System.out.println("matriz cercana en funcion Laberinto.crearMatrizCercana" + new Gson().toJson(matrizCercana));
+		//return matrizCercana;
+		return laberintoCercano;
+	}
+		
 }
