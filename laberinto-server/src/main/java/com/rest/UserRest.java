@@ -45,9 +45,7 @@ public class UserRest {
 		HttpResponse response = httpclient.execute(httppost);
 		String json = EntityUtils.toString(response.getEntity());
 		objeto = new Gson().fromJson(json, User.class);
-		
-		if (objeto != null)
-			objeto.inicializarPerfiles(json);
+
 
 		return objeto;
 	}
@@ -64,8 +62,7 @@ public class UserRest {
 			HttpResponse response = httpclient.execute(httppost);
 			String json = EntityUtils.toString(response.getEntity());
 			objeto = new Gson().fromJson(json, User.class);
-			if (objeto != null)
-				objeto.inicializarPerfiles(json);
+
 			
 		return objeto;
 	}

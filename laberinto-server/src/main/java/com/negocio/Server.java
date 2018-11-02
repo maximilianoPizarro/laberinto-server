@@ -141,7 +141,7 @@ public class Server {
 			//System.out.println(elemento.getEchoSocket().getInetAddress());
 			//retorno.add(elemento.getEchoSocket().getInetAddress().getHostName());
 			if (elemento.getUsuario() != null) 
-				retorno.add(elemento.getUsuario().usuarioClave());
+				retorno.add(elemento.getUsuario().getPassword());
 		}
 		
 		return retorno;

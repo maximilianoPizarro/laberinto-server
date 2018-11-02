@@ -71,7 +71,7 @@ public class Cliente implements Runnable{
 	}
 
 	public void desconectar() throws IOException {
-		System.out.println(usuario.usuarioClave()+" desconectado");
+		System.out.println(usuario.getSsoId()+" desconectado");
 		this.out.println("se ha desconectado.");
 		this.echoSocket.close();
 		this.out.close();
