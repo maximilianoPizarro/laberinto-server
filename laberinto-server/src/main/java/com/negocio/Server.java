@@ -140,7 +140,8 @@ public class Server {
 		for(Cliente elemento:clientes){
 			//System.out.println(elemento.getEchoSocket().getInetAddress());
 			//retorno.add(elemento.getEchoSocket().getInetAddress().getHostName());
-			retorno.add(elemento.getUsuario().usuarioClave());
+			if (elemento.getUsuario() != null) 
+				retorno.add(elemento.getUsuario().usuarioClave());
 		}
 		
 		return retorno;

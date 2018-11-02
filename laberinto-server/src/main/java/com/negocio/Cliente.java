@@ -172,8 +172,16 @@ public class Cliente implements Runnable{
 		} catch (IOException e) {
 			System.out.println("Error en la capa de negocio");
 		}
-		
-		
+		catch(com.google.gson.JsonSyntaxException e) {
+			// SI LA DA ESTE ERROR NO ENVIO CORRECTAMENTE EL DATO PARA CONVERTIR CON JSON
+			try {
+				enviarDato("ERROR 504: USUARIO MAL FORMADO");
+				System.out.println("ERROR AL TRANSFORMAR STRING");
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}		
 	}
 
 	public static ArrayList<String> adpatadorEthernet() {
