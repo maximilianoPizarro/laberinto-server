@@ -17,6 +17,7 @@ import java.util.Scanner;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -467,6 +468,8 @@ public class Funciones {
         }
         if (usuario.compareTo(usuarioLeido) == 0) {
         	String passwordLeido = sc.next();
+        	passwordLeido = DigestUtils.md5Hex(passwordLeido);
+        	System.out.println("PASSWORD ENCRIPTADO PASSWORD DE ARCHIVO: " + passwordLeido);
         	if (password.compareTo(passwordLeido) == 0) {
         		result = true;
         	}
