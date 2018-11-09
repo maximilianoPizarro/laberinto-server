@@ -1,8 +1,11 @@
 package com.negocio;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -17,7 +20,7 @@ import com.modelo.Laberinto;
 import com.modelo.Punto;
 import com.modelo.User;
 
-public class Cliente implements Runnable{
+public class Cliente implements Runnable {
 	private int identificador;
 	private static String host = "127.0.0.1";
 	private static int port = 8081;
@@ -26,7 +29,7 @@ public class Cliente implements Runnable{
 	private PrintWriter out;
 	private BufferedReader in;
 	private User usuario;
-	
+	private String inTextArea;
 
 	private static Cliente singleton = new Cliente(host, port);
 
@@ -35,13 +38,12 @@ public class Cliente implements Runnable{
 		this.remoteaddr = new InetSocketAddress(host, port);
 
 	}
-	
-	public Cliente(Socket socket,int identificador) throws IOException {
-		this.echoSocket = socket;
-		this.identificador=identificador;
-		this.out=new PrintWriter(this.echoSocket.getOutputStream(), true);
-		this.in = new BufferedReader(new InputStreamReader(this.echoSocket.getInputStream()));
 
+	public Cliente(Socket socket, int identificador) throws IOException {
+		this.echoSocket = socket;
+		this.identificador = identificador;
+		this.out = new PrintWriter(this.echoSocket.getOutputStream(), true);
+		this.in = new BufferedReader(new InputStreamReader(this.echoSocket.getInputStream()));
 
 	}
 
@@ -49,7 +51,6 @@ public class Cliente implements Runnable{
 		return singleton;
 	}
 
-	
 	public void clear() {
 		singleton = new Cliente(host, port);
 	}
@@ -60,7 +61,7 @@ public class Cliente implements Runnable{
 			enviarDato("se ha conectado.");
 		} catch (IOException e) {
 			System.err.println("no se pudo conectar con el servidor");
-		//	System.exit(1);
+			// System.exit(1);
 		}
 		System.out.println("conectado");
 
@@ -71,7 +72,7 @@ public class Cliente implements Runnable{
 	}
 
 	public void desconectar() throws IOException {
-		System.out.println(usuario.getSsoId()+" desconectado");
+		System.out.println(usuario.getSsoId() + " desconectado");
 		this.out.println("se ha desconectado.");
 		this.echoSocket.close();
 		this.out.close();
@@ -86,24 +87,23 @@ public class Cliente implements Runnable{
 
 	public String recibirDato() throws IOException {
 		String response;
-	 	this.in = new BufferedReader(new InputStreamReader(this.echoSocket.getInputStream()));
+		this.in = new BufferedReader(new InputStreamReader(this.echoSocket.getInputStream()));
 		response = this.in.readLine();
-		
+		this.inTextArea=response;
 		System.out.print("response: " + response);
 		return response;
 	}
 	
 	
 
+
 	public int getIdentificador() {
 		return identificador;
 	}
 
-
 	public Socket getEchoSocket() {
 		return echoSocket;
 	}
-	
 
 	public User getUsuario() {
 		return usuario;
@@ -112,6 +112,8 @@ public class Cliente implements Runnable{
 	public void setUsuario(User usuario) {
 		this.usuario = usuario;
 	}
+	
+	
 
 	public String ipCliente() throws SocketException {
 		String ip = "S/D";
@@ -120,60 +122,67 @@ public class Cliente implements Runnable{
 		ip = ip.substring(0, ip.lastIndexOf('('));
 		return ip;
 	}
-	
-	public void run(){
-		boolean autenticado=true;
+
+	public void run() {
+		boolean autenticado = true;
 		Funciones aC = new Funciones();
 		Laberinto l = new Laberinto();
+
 		try {
 			l.rellenarLaberinto();
 		} catch (URISyntaxException e) {
 			System.out.println("error en la capa de negocio: cliente");
 		}
-		
-		try {			
-			this.usuario=new Gson().fromJson(recibirDato(),User.class);
+
+		try {
+			this.usuario = new Gson().fromJson(recibirDato(), User.class);
 			System.out.println(usuario.toString());
 			try {
-				if ( aC.validarLogin(usuario.getSsoId(), usuario.getPassword())) {
+				if (aC.validarLogin(usuario.getSsoId(), usuario.getPassword())) {
 					enviarDato("autenticado");
-					
-				}
-				else{
+
+				} else {
 					enviarDato("usuario no encontrado");
-					autenticado=false;
+					autenticado = false;
 				}
 			} catch (URISyntaxException e) {
 				System.out.println("error en la capa de negocio: cliente");
 			}
 			enviarDato(l.dibujarJson());
-			
-			//recibo el punto inicial
+
+			// recibo el punto inicial
 			System.out.println("recibo punto donde estoy");
-			Punto p1 = new Gson().fromJson(recibirDato(),Punto.class);
-			//this.usuario=new Gson().fromJson(recibirDato(),User.class);
-			//System.out.println("envio matriz cercana" + p1.dibujarJson());
+			Punto p1 = new Gson().fromJson(recibirDato(), Punto.class);
+			// this.usuario=new Gson().fromJson(recibirDato(),User.class);
+			// System.out.println("envio matriz cercana" + p1.dibujarJson());
 			System.out.println("envio matriz cercana");
-			//char[][] matrizCercana = l.crearMatrizCercana(p1);  // CREAR MATRIZ Y ENVIAr
-			Laberinto laberintoCercano = l.crearMatrizCercana(p1);  // CREAR MATRIZ Y ENVIAr
+			// char[][] matrizCercana = l.crearMatrizCercana(p1); // CREAR
+			// MATRIZ Y ENVIAr
+			Laberinto laberintoCercano = l.crearMatrizCercana(p1); // CREAR
+																	// MATRIZ Y
+																	// ENVIAr
 			enviarDato(laberintoCercano.laberintoToJson());
-			
 
 			while (autenticado) {
 				System.out.println("recibo punto donde estoy");
 				p1 = new Gson().fromJson(recibirDato(), Punto.class);
 				if (p1.getPositionX() > 2)
-					System.out.println("paso a 1");	
+					System.out.println("paso a 1");
 				System.out.println("envio matriz cercana");
-				laberintoCercano = l.crearMatrizCercana(p1); // CREAR MATRIZ Y ENVIAr
+				laberintoCercano = l.crearMatrizCercana(p1); // CREAR MATRIZ Y
+																// ENVIAr
 				enviarDato(laberintoCercano.laberintoToJson());
-				//desconectar();
+				// desconectar();
 			}
 		} catch (IOException e) {
-			System.out.println("Error en la capa de negocio");
-		}
-		catch(com.google.gson.JsonSyntaxException e) {
-			// SI LA DA ESTE ERROR NO ENVIO CORRECTAMENTE EL DATO PARA CONVERTIR CON JSON
+			try {
+				desconectar();
+			} catch (IOException e1) {
+				System.out.println("Error en la capa de negocio");
+			}
+		} catch (com.google.gson.JsonSyntaxException e) {
+			// SI LA DA ESTE ERROR NO ENVIO CORRECTAMENTE EL DATO PARA CONVERTIR
+			// CON JSON
 			try {
 				enviarDato("ERROR 504: USUARIO MAL FORMADO");
 				System.out.println("ERROR AL TRANSFORMAR STRING");
@@ -181,7 +190,16 @@ public class Cliente implements Runnable{
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-		}		
+		}
+	}
+	
+	
+
+
+
+	@Override
+	public String toString() {
+		return "Cliente [usuario=" + usuario + ", envia=" + inTextArea + "]";
 	}
 
 	public static ArrayList<String> adpatadorEthernet() {

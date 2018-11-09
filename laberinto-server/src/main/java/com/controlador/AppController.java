@@ -42,6 +42,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.Socket;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -58,6 +59,7 @@ import com.negocio.Server;
 import com.negocio.Cliente;
 import com.negocio.Facade;
 import com.negocio.UserABM;
+import com.test.TextAreaPrintStream;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -120,10 +122,14 @@ public class AppController extends Thread implements Initializable {
 	@FXML
 	private TextArea laberinto;
 
+	@FXML
+	private TextArea consola;
+
 	private ArrayList<String> buffer = new ArrayList<String>();
-	
+
 	private ArrayList<Thread> hilos = new ArrayList<Thread>();
-	
+
+	public static Server server = Server.getInstance();
 
 	@FXML
 	protected void handleSubmitButtonAction(ActionEvent event) {
@@ -134,47 +140,69 @@ public class AppController extends Thread implements Initializable {
 	public void initialize(URL url, ResourceBundle rb) { // TODO }
 		Laberinto l = new Laberinto();
 		try {
+			/*
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					Server server = Server.getInstance();
+					ArrayList<String> entrada=new ArrayList<String>();
+					try {
+							Thread.sleep(1000);
+							//server.getClientes().parallelStream().iterator().wait();
+						   server.getClientes().parallelStream().forEach(c-> entrada.add(c.toString()));
+					
+						while(true)
+						   list.setItems(FXCollections.observableArrayList(entrada));
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					// PrintToTextArea.create(consola);
+					//list.setItems(FXCollections.observableArrayList(server.getClientesString()));
+
+				}
+			});
+*/
 			l.rellenarLaberinto();
 			laberinto.setText(l.dibujarString());
 		} catch (URISyntaxException e) {
 			System.out.println("error al cargar el archivo");
 		}
-		//list.setItems(FXCollections.observableArrayList(buffer));
+		// list.setItems(FXCollections.observableArrayList(buffer));
 		start();
-
-
 
 	}
 
 	@Override
 	public void run() {
-		//errorLogin.setText("");
-		Server server = Server.getInstance();	
+		// errorLogin.setText("");
+		Server server = Server.getInstance();
 
-		try {		
-			while (server.getEchoServer().isBound()) {       
-		         if(server.agregarCliente(new Cliente(server.conectar(),server.cantidadDeClientes))){
-			         server.cantidadDeClientes++; 	
-			         System.out.println("clientes: "+server.cantidadDeClientes);
+		try {
+			while (server.getEchoServer().isBound()) {
 
-		        	 Thread proceso = new Thread(server.traerUltimoCliente()); 		         
-		         	 proceso.start();		         	 
-		         	 hilos.add(proceso);	  
-		         	 
-		         }
-		 		Platform.runLater(new Runnable(){
-				     @Override
-		            public void run() {
-				    	 	try {
-								Thread.sleep(5000);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-							list.setItems(FXCollections.observableArrayList(server.getClientesString()));
-		            }
+				if (server.agregarCliente(new Cliente(server.conectar(), server.cantidadDeClientes))) {
+					server.cantidadDeClientes++;
+					System.out.println("clientes: " + server.cantidadDeClientes);
+
+					Thread proceso = new Thread(server.traerUltimoCliente());
+					proceso.start();
+					hilos.add(proceso);
+
 				}
-				);
-				
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						// PrintToTextArea.create(consola);
+						list.setItems(FXCollections.observableArrayList(server.getClientesString()));
+
+					}
+				});
+
 			}
 
 		} catch (IOException e) {
@@ -185,10 +213,10 @@ public class AppController extends Thread implements Initializable {
 	@SuppressWarnings("deprecation")
 	@FXML
 	protected void salir(ActionEvent event) {
-		int i=1;
-		
-		for(Thread elemento:hilos){
-			System.out.println("Suspendiendo hilo: "+i);
+		int i = 1;
+
+		for (Thread elemento : hilos) {
+			System.out.println("Suspendiendo hilo: " + i);
 			elemento.stop();
 			i++;
 		}
@@ -211,21 +239,21 @@ public class AppController extends Thread implements Initializable {
 
 }
 
-class Actualizar implements Runnable{
-	
-	 private static final Semaphore DISPONIBILIDAD = new Semaphore(1);
-	
-	 private final ListView<String> list;
-	 private final ArrayList<String> buffer;
-	
-	public Actualizar(ListView<String> list,ArrayList<String> buffer){
-		this.list=list;
-		this.buffer=buffer;		
-		
+class Actualizar implements Runnable {
+
+	private static final Semaphore DISPONIBILIDAD = new Semaphore(1);
+
+	private final ListView<String> list;
+	private final ArrayList<String> buffer;
+
+	public Actualizar(ListView<String> list, ArrayList<String> buffer) {
+		this.list = list;
+		this.buffer = buffer;
+
 	}
-	
+
 	@Override
-	public void run(){
+	public void run() {
 		try {
 			DISPONIBILIDAD.acquire();
 			list.setItems(FXCollections.observableArrayList(buffer));
@@ -234,7 +262,6 @@ class Actualizar implements Runnable{
 			e.printStackTrace();
 		}
 
-		
 	}
-	
+
 }
