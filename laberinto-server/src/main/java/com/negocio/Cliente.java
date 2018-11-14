@@ -178,7 +178,7 @@ public class Cliente implements Runnable {
 			try {
 				desconectar();
 			} catch (IOException e1) {
-				System.out.println("Error en la capa de negocio");
+				System.out.println("Error en la capa de negocio: cliente");
 			}
 		} catch (com.google.gson.JsonSyntaxException e) {
 			// SI LA DA ESTE ERROR NO ENVIO CORRECTAMENTE EL DATO PARA CONVERTIR

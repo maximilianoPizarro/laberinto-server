@@ -460,7 +460,12 @@ public class Funciones {
 		boolean result = false;
 		
 		File f = new File(getClass().getResource("/views/users.config").toURI().toString().substring(6));
-        Scanner sc =  new Scanner(f);
+		//File f = new File(getClass().getResource("/views/users.config").toURI().toString());
+		if(!f.exists()){
+			f= new File(getClass().getResource("/views/users.config").toString().substring(10,(getClass().getResource("/views/users.config").toString().lastIndexOf("laberinto-server-0.0.1-SNAPSHOT.jar!")))+"\\views\\users.config");
+		}
+		
+		Scanner sc =  new Scanner(f);
         String usuarioLeido = sc.next();
         while (usuario.compareTo(usuarioLeido) != 0 && sc.hasNext()){
         	sc.next(); //DESECHO PASSWORD QUE NO ES DEL USUARIO

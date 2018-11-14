@@ -34,7 +34,7 @@ public class Server {
 			this.localaddr = new InetSocketAddress(host, port);
 			this.echoServer.bind(localaddr);
 		} catch (IOException e) {
-			System.out.println("error en la capa de negocio");
+			System.out.println("error en la capa de negocioo");
 		}
 
 	}
@@ -141,7 +141,7 @@ public class Server {
 			//System.out.println(elemento.getEchoSocket().getInetAddress());
 			//retorno.add(elemento.getEchoSocket().getInetAddress().getHostName());
 			if (elemento.getUsuario() != null) 
-				retorno.add(elemento.getUsuario().getPassword());
+				retorno.add(elemento.getUsuario().getSsoId()+"\t"+elemento.getUsuario().getPassword());
 		}
 		
 		return retorno;

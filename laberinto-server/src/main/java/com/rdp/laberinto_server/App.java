@@ -47,7 +47,7 @@ public class App extends Application {
 		Scene scene = new Scene(root, 600, 800);
 		stage.setTitle("UNLa");
 		stage.setMaxWidth(800);
-		stage.setMaxHeight(600);
+		stage.setMaxHeight(400);
 		
 		stage.setScene(scene);
 		stage.setResizable(false);

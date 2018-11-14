@@ -15,7 +15,12 @@ public class Laberinto {
 	
 	public  void rellenarLaberinto() throws URISyntaxException {
 		this.celdas = new char[10][10]; 
-		File f = new File(getClass().getResource("/views/laberinto.config").toURI().toString().substring(6));
+		File f = new File(getClass().getResource("/views/laberinto.config").toString().substring(6));
+		if(!f.exists()){
+			f= new File(getClass().getResource("/views/laberinto.config").toString().substring(10,(getClass().getResource("/views/laberinto.config").toString().lastIndexOf("laberinto-server-0.0.1-SNAPSHOT.jar!")))+"\\views\\laberinto.config");
+		}
+		//System.out.println("-->"+getClass().getResource("/views/laberinto.config").toString().substring(10, (getClass().getResource("/views/laberinto.config").toString().lastIndexOf("laberinto-server-0.0.1-SNAPSHOT.jar!"))));
+				
         try  (Scanner entrada = new Scanner(f)) {
         	int i = 0;
         	int j = 0;

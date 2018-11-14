@@ -68,13 +68,14 @@
       <AnchorPane fx:id="container" layoutY="26.0" prefHeight="374.0" prefWidth="615.0" styleClass="root">
          <children>
             
-           <Text id="welcome-text" fx:id="titulo" layoutX="70.0" layoutY="55.0" text="Panel de Control" wrappingWidth="296.0" />
+           <Text id="welcome-text" fx:id="titulo" layoutX="22.0" layoutY="49.0" text="Panel de Control" wrappingWidth="296.0" />
                     
             <Label fx:id="errorLogin" layoutX="53.0" layoutY="293.0" prefHeight="17.0" prefWidth="535.0" text="errorlogin" visible="false" />
             <Label fx:id="copyright" layoutX="14.0" layoutY="310.0" prefHeight="17.0" prefWidth="587.0" text="errorlogin" textAlignment="CENTER" visible="false" />
-            <TextArea fx:id="laberinto" layoutX="338.0" layoutY="218.0" prefHeight="118.0" prefWidth="145.0" />
-            <ListView fx:id="list" layoutX="338.0" layoutY="88.0" prefHeight="112.0" prefWidth="232.0" />
-            <TextArea fx:id="consola" layoutX="46.0" layoutY="88.0" prefHeight="260.0" prefWidth="262.0" />
+            <TextArea fx:id="laberinto" layoutX="420.0" layoutY="131.0" prefHeight="134.0" prefWidth="136.0" />
+            <ListView fx:id="list" layoutX="14.0" layoutY="131.0" prefHeight="134.0" prefWidth="366.0" />
+            <Text id="welcome-text" fx:id="titulo1" layoutX="22.0" layoutY="119.0" text="Lista de usuarios" wrappingWidth="296.0" />
+            <Text id="welcome-text" fx:id="titulo11" layoutX="420.0" layoutY="119.0" text="Mapa " wrappingWidth="296.0" />
          </children>
       </AnchorPane>
 
