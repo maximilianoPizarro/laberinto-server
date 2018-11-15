@@ -158,11 +158,14 @@ public class Cliente implements Runnable {
 	
 				// recibo el punto inicial
 				System.out.println("recibo punto donde estoy inicial");
-				Punto p1 = new Gson().fromJson(recibirDato(), Punto.class);
-				System.out.println("PUNTO: --> " + p1);
-				String estadoPuntoRecibido = validarPuntoRecibido(p1); 
+				String puntoEnJson = recibirDato();
+				String estadoPuntoRecibido = validarPuntoRecibido(puntoEnJson);
 				if ( estadoPuntoRecibido.compareTo("OK") != 0)
 					enviarDato(estadoPuntoRecibido);
+				Punto p1 = new Gson().fromJson(puntoEnJson, Punto.class);
+				System.out.println("PUNTO: --> " + p1);
+				 
+				
 				// this.usuario=new Gson().fromJson(recibirDato(),User.class);
 				// System.out.println("envio matriz cercana" + p1.dibujarJson());
 				System.out.println("envio matriz cercana");
@@ -209,10 +212,14 @@ public class Cliente implements Runnable {
 
 
 
-	private String validarPuntoRecibido(Punto p1) {
+	private String validarPuntoRecibido(String p1) {
 		String rta = "OK";
-		if (p1 == null)
+		//{"positionX":0.0,"positionY":0.0}
+		System.out.println("el string a comparar es: " + p1);
+		if (!p1.contains("positionX") && !p1.contains("positionY")) {
+			System.out.println("no contiene");
 			rta = "ERROR 505: ERROR FORMATO PUNTO";
+		}
 		return rta;
 	}
 
