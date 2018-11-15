@@ -72,7 +72,7 @@ public class Cliente implements Runnable {
 	}
 
 	public void desconectar() throws IOException {
-		System.out.println(usuario.getSsoId() + " desconectado");
+		//System.out.println(usuario.getSsoId() + " desconectado");
 		this.out.println("se ha desconectado.");
 		this.echoSocket.close();
 		this.out.close();
@@ -136,43 +136,54 @@ public class Cliente implements Runnable {
 
 		try {
 			this.usuario = new Gson().fromJson(recibirDato(), User.class);
-			System.out.println(usuario.toString());
+			System.out.println("recibo el usuario gson user.class: " + this.usuario);		
+					
 			try {
-				if (aC.validarLogin(usuario.getSsoId(), usuario.getPassword())) {
+				if (this.usuario == null || this.usuario.getSsoId() == null || this.usuario.getPassword() == null) {
+					enviarDato("ERROR 501: PROTOCOLO USUARIO INCORRECTO");
+					autenticado = false;
+				}
+				else if (aC.validarLogin(usuario.getSsoId(), usuario.getPassword())) {
 					enviarDato("autenticado");
 
 				} else {
-					enviarDato("usuario no encontrado");
+					enviarDato("ERROR 503: USUARIO Y/O CONTRASEÑA INCORRECTO/S");
 					autenticado = false;
 				}
 			} catch (URISyntaxException e) {
 				System.out.println("error en la capa de negocio: cliente");
 			}
-			enviarDato(l.dibujarJson());
-
-			// recibo el punto inicial
-			System.out.println("recibo punto donde estoy");
-			Punto p1 = new Gson().fromJson(recibirDato(), Punto.class);
-			// this.usuario=new Gson().fromJson(recibirDato(),User.class);
-			// System.out.println("envio matriz cercana" + p1.dibujarJson());
-			System.out.println("envio matriz cercana");
-			// char[][] matrizCercana = l.crearMatrizCercana(p1); // CREAR
-			// MATRIZ Y ENVIAr
-			Laberinto laberintoCercano = l.crearMatrizCercana(p1); // CREAR
-																	// MATRIZ Y
-																	// ENVIAr
-			enviarDato(laberintoCercano.laberintoToJson());
-
-			while (autenticado) {
-				System.out.println("recibo punto donde estoy");
-				p1 = new Gson().fromJson(recibirDato(), Punto.class);
-				if (p1.getPositionX() > 2)
-					System.out.println("paso a 1");
+			if (autenticado) {
+				//enviarDato(l.dibujarJson()); 14-11-18
+	
+				// recibo el punto inicial
+				System.out.println("recibo punto donde estoy inicial");
+				Punto p1 = new Gson().fromJson(recibirDato(), Punto.class);
+				System.out.println("PUNTO: --> " + p1);
+				String estadoPuntoRecibido = validarPuntoRecibido(p1); 
+				if ( estadoPuntoRecibido.compareTo("OK") != 0)
+					enviarDato(estadoPuntoRecibido);
+				// this.usuario=new Gson().fromJson(recibirDato(),User.class);
+				// System.out.println("envio matriz cercana" + p1.dibujarJson());
 				System.out.println("envio matriz cercana");
-				laberintoCercano = l.crearMatrizCercana(p1); // CREAR MATRIZ Y
-																// ENVIAr
+				// char[][] matrizCercana = l.crearMatrizCercana(p1); // CREAR
+				// MATRIZ Y ENVIAr
+				Laberinto laberintoCercano = l.crearMatrizCercana(p1); // CREAR
+																		// MATRIZ Y
+																		// ENVIAr
 				enviarDato(laberintoCercano.laberintoToJson());
-				// desconectar();
+
+				while (autenticado) {
+					System.out.println("recibo punto donde estoy en juego");
+					p1 = new Gson().fromJson(recibirDato(), Punto.class);
+					if (p1.getPositionX() > 2)
+						System.out.println("paso a 1");
+					System.out.println("envio matriz cercana");
+					laberintoCercano = l.crearMatrizCercana(p1); // CREAR MATRIZ Y
+																	// ENVIAr
+					enviarDato(laberintoCercano.laberintoToJson());
+					// desconectar();
+				}
 			}
 		} catch (IOException e) {
 			try {
@@ -184,7 +195,8 @@ public class Cliente implements Runnable {
 			// SI LA DA ESTE ERROR NO ENVIO CORRECTAMENTE EL DATO PARA CONVERTIR
 			// CON JSON
 			try {
-				enviarDato("ERROR 504: USUARIO MAL FORMADO");
+				enviarDato("ERROR 504: PROTOCOLO INVALIDO");
+				autenticado = false;
 				System.out.println("ERROR AL TRANSFORMAR STRING");
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
@@ -196,6 +208,13 @@ public class Cliente implements Runnable {
 	
 
 
+
+	private String validarPuntoRecibido(Punto p1) {
+		String rta = "OK";
+		if (p1 == null)
+			rta = "ERROR 505: ERROR FORMATO PUNTO";
+		return rta;
+	}
 
 	@Override
 	public String toString() {

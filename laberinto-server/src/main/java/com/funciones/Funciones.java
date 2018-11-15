@@ -474,7 +474,7 @@ public class Funciones {
         if (usuario.compareTo(usuarioLeido) == 0) {
         	String passwordLeido = sc.next();
         	passwordLeido = DigestUtils.md5Hex(passwordLeido);
-        	System.out.println("PASSWORD ENCRIPTADO PASSWORD DE ARCHIVO: " + passwordLeido);
+        	//System.out.println("PASSWORD ENCRIPTADO PASSWORD DE ARCHIVO: " + passwordLeido);
         	if (password.compareTo(passwordLeido) == 0) {
         		result = true;
         	}

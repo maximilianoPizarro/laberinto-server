@@ -59,7 +59,7 @@ import com.negocio.Server;
 import com.negocio.Cliente;
 import com.negocio.Facade;
 import com.negocio.UserABM;
-import com.test.TextAreaPrintStream;
+//import com.test.TextAreaPrintStream;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;

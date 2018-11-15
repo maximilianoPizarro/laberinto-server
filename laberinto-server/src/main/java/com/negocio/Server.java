@@ -152,7 +152,7 @@ public class Server {
 		
 		int i = 0;
 		while (i < clientes.size() && respuesta) {
-			if(clientes.get(i).getUsuario().equals(c.getUsuario())){
+			if(clientes.get(i).getUsuario() != null && clientes.get(i).getUsuario().equals(c.getUsuario())){
 				respuesta=false;
 				clientes.remove(clientes.get(i));
 				}
