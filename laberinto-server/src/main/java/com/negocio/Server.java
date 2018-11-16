@@ -16,7 +16,7 @@ import java.util.Vector;
 
 
 public class Server {
-	private static String host = "192.168.0.6";
+	private static String host = "127.0.0.1";
 	private static int port = 8081;
 	protected Socket echoSocket;
 	private ServerSocket echoServer;
