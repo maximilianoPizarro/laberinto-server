@@ -9,6 +9,6 @@ Configuración del entorno:
 * JavaFX https://opencv.org/
 * Maven
 
-
+Cliente https://github.com/maximilianoPizarro/laberinto-cliente
 
 
